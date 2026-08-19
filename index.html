@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Session Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">Sports Motion Tracker &middot; Live from results.db</div>
+    <h1>Session Dashboard</h1>
+  </div>
+  <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap">
+    <div class="eyebrow" id="generated">Loading…</div>
+    <button id="runBtn" class="run-btn">&#9654; Run Analysis</button>
+  </div>
+</header>
+
+<section id="runOutputSection" style="display:none">
+  <div class="card">
+    <div class="row" style="margin-bottom:0.6rem">
+      <span class="label" style="font-size:0.95rem">Console Output</span>
+      <span class="eyebrow" id="runStatus"></span>
+    </div>
+    <pre id="runOutput" class="console-box"></pre>
+  </div>
+</section>
+
+<section id="recordSection">
+  <h2>Record a Session</h2>
+  <div class="card">
+    <div class="record-row">
+      <div class="field">
+        <label for="labelInput">Motion label</label>
+        <input type="text" id="labelInput" placeholder="forehand, backhand, serve, idle...">
+      </div>
+      <div class="field" style="max-width:120px">
+        <label for="sessionInput">Session</label>
+        <input type="number" id="sessionInput" min="1" value="1">
+      </div>
+      <button id="startBtn" class="run-btn">&#9654; Start Recording</button>
+      <button id="stopBtn" class="run-btn stop-btn" style="display:none">&#9632; Stop</button>
+    </div>
+    <div id="recordLive" style="display:none" class="record-live">
+      <span class="live-dot"></span>
+      <span id="liveText">Recording…</span>
+    </div>
+    <div id="recordResult" class="eyebrow" style="margin-top:0.6rem"></div>
+  </div>
+</section>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="cell"><div class="eyebrow">Total Reps</div><div class="digits big" id="totalReps">—</div></div>
+  <div class="cell"><div class="eyebrow">Recordings</div><div class="digits" id="totalRecordings">—</div></div>
+  <div class="cell"><div class="eyebrow">Analyze Runs Logged</div><div class="digits" id="totalRuns">—</div></div>
+  <div class="cell"><div class="eyebrow">Latest Accuracy</div><div class="digits" id="latestAcc" style="color:var(--court)">—</div></div>
+</div>
+
+<section id="emptyState" style="display:none">
+  <div class="card">
+    <p style="margin:0">No results yet. Run <code>python record.py</code> to capture some swings,
+    then <code>python analyze.py</code> to process them — this page updates automatically
+    on refresh.</p>
+  </div>
+</section>
+
+<section id="mainContent" style="display:none">
+  <h2>Accuracy — Same-Session vs Cross-Session</h2>
+  <div class="card row">
+    <span class="label">Same-session (k-fold)</span>
+    <span class="digits" id="accKfold" style="font-size:1.6rem">—</span>
+  </div>
+  <div class="card row">
+    <span class="label">Cross-session (honest)</span>
+    <span class="digits" id="accLoso" style="font-size:1.6rem; color:var(--court)">—</span>
+  </div>
+  <div id="oneSessionNote" class="note" style="display:none">
+    Only one session recorded so far — record a second session (remount the sensor
+    between sessions) to unlock cross-session evaluation.
+  </div>
+
+  <h2>Progress Across Every Analyze Run</h2>
+  <div class="card">
+    <canvas id="historyChart" height="90"></canvas>
+  </div>
+
+  <h2>Movement Consistency (latest run)</h2>
+  <div id="consistencyCards"></div>
+  <div id="recommendationNote" class="note" style="display:none"></div>
+
+  <h2>Link Quality (latest run)</h2>
+  <div class="card" style="padding:0">
+    <table>
+      <tr><th>Recording</th><th>Rate</th><th>Packet Loss</th></tr>
+      <tbody id="linkRows"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  Backend: Flask + SQLite (<code>results.db</code>). Frontend fetches this data live via
+  <code>/api/latest</code> and <code>/api/history</code>. Re-run <code>python analyze.py</code>
+  after every session and refresh this page.
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

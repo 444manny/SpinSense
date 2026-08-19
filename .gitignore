@@ -1,0 +1,11 @@
+node_modules/ 
+.next/ 
+out/ 
+data/ 
+results/ 
+__pycache__/ 
+*.pyc 
+webapp/results.db 
+*.stl 
+.DS_Store 
+Thumbs.db 

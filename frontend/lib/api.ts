@@ -35,4 +35,13 @@ export const api = {
 
   runAnalysis: () =>
     fetch('/api/run-analysis', { method: 'POST' }).then(json<RunAnalysisResponse>),
+
+  ping: async (): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/record/status', { method: 'HEAD' });
+      return res.ok;
+    } catch  {
+      return false;
+    }
+  }
 };
